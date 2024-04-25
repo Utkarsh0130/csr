@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSR DETECTION</title>
+  <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;    
+    background-color:lightseagreen  ;  
+     /* background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.45) 100%); */
+}
+
+  .container {
+    width: 40%;
+    margin: 150px auto;
+    background-color: rgba(255, 255, 255, 0.4); /* Transparent white background for better readability */
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    text-align: center;
+
+  }
+  .form-container {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .form-group input[type="text"],
+  .form-group input[type="file"],
+  .form-group select {
+    width: auto;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  .form-group input[type="submit"] {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .form-group input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  /* Hide the confirmation message by default */
+  .confirmation-message {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 5px;
+  }
+  /* Style for output message */
+  #outputMessage {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  </style>
+</head>
+<body >
+  <div class="container">
+    <h1>OCT Image Submission</h1>
+    <div class="form-container">
+      <form id="octForm" action="/predict" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="patientName">Patient Name:</label>
+          <input type="text" id="patientName" name="patientName" required>
+        </div>
+        <div class="form-group">
+          <label for="file">Upload OCT Image:</label>
+          <input type="file" id="file" name="file" accept=".jpg, .jpeg, .png" required>
+        </div>
+        <div class="form-group">
+          <input type="submit" id="submitBtn" value="Predict">
+        </div>
+      </form>
+      <!-- Confirmation message -->
+      <div class="confirmation-message" id="confirmationMessage">
+        Image submitted!
+      </div>
+      <!-- Output message -->
+      <!-- <div id="outputMessage"></div> -->
+    </div>
+  </div>
+<script>
+  document.getElementById('octForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    var formData = new FormData(octForm); // Create FormData object to store form data
+    
+    // Send form data to Flask backend via fetch
+    fetch('/predict', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text();
+    })
+    .then(data => {
+      // Display response from Flask backend (prediction or error message)
+      document.getElementById('confirmationMessage').innerText = "Detection is Performed and Result is : "+data;
+      document.getElementById('confirmationMessage').style.display = 'block';
+      // Update the output message div with the response
+      // document.getElementById('outputMessage').innerHTML = data;
+    })
+    .catch(error => {
+      console.error('There was a problem with the fetch operation:', error);
+    });
+  });
+</script>
+</body>
+</html>
